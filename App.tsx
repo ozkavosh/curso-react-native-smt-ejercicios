@@ -62,7 +62,7 @@ const App = () => {
 
   useEffect(() => {
     if (search) {
-      setPokemons(pokemonList.filter(pokemon => pokemon.name.includes(search)));
+      setPokemons(pokemonList.filter(pokemon => pokemon.name.includes(search.toLowerCase())));
     } else {
       setPokemons(pokemonList);
     }

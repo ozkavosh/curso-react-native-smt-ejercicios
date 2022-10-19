@@ -4,15 +4,14 @@ import {
   View,
   Text,
   SafeAreaView,
-  FlatList,
   Image,
   ActivityIndicator,
   Button,
   Switch,
   TextInput,
 } from 'react-native';
+import PokemonList from '../../components/PokemonList/PokemonList';
 import pokemonList from '../../db/pokemonList.js';
-import { capitalize } from '../../utils/capitalizeString';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -39,37 +38,8 @@ const styles = StyleSheet.create({
   button: {
     flexGrow: 1,
   },
-  pokemon: {
-    width: '100%',
-    height: 'auto',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: 'gray',
-  },
-  pokemonImg: {
-    width: 75,
-    height: 75,
-    padding: 25,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: 'black',
-    backgroundColor: 'yellow',
-  },
-  pokemonText: {
-    marginLeft: 20,
-    fontWeight: 'bold',
-    color: 'black',
-  },
+  
 });
-
-const renderPokemon = ({item: pokemon}) => (
-  <View style={styles.pokemon}>
-    <Image style={styles.pokemonImg} source={{uri: pokemon.url}} />
-    <Text style={styles.pokemonText}>{capitalize(pokemon.name)}</Text>
-  </View>
-);
 
 const Home = () => {
   const [disabled, setDisabled] = useState(false);
@@ -137,33 +107,7 @@ const Home = () => {
         )}
       </View>
 
-      <FlatList
-        style={{width: '100%'}}
-        data={pokemons}
-        maxToRenderPerBatch={5}
-        initialNumToRender={5}
-        keyExtractor={item => item.name}
-        renderItem={renderPokemon}
-        onRefresh={() => {}}
-        refreshing={loading}
-        extraData={pokemons}
-        ListEmptyComponent={
-          <View
-            style={{
-              marginTop: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Text>No se pudo encontrar ningún Pokemon con el nombre</Text>
-            <Text
-              style={{
-                textAlign: 'center',
-                fontWeight: 'bold',
-                fontSize: 20,
-              }}>{`"${search}"`}</Text>
-          </View>
-        }
-      />
+      <PokemonList loading={loading} pokemons={pokemons} search={search}/>
     </SafeAreaView>
   );
 };

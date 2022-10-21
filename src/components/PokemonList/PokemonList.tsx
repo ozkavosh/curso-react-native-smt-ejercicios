@@ -1,9 +1,9 @@
-import {FlatList} from 'react-native';
+import {FlatList, RefreshControl} from 'react-native';
 import React from 'react';
 import PokemonListItem from '../PokemonListItem/PokemonListItem';
 import PokemonListEmpty from '../PokemonListEmpty/PokemonListEmpty';
 
-const PokemonList = ({pokemons, loading, search}) => {
+const PokemonList = ({pokemons, loading, search, handleSearch}) => {
   return (
     <FlatList
       style={{width: '100%'}}
@@ -12,8 +12,7 @@ const PokemonList = ({pokemons, loading, search}) => {
       initialNumToRender={5}
       keyExtractor={item => item.name}
       renderItem={({item}) => <PokemonListItem pokemon={item}/>}
-      onRefresh={() => {}}
-      refreshing={loading}
+      refreshControl = { <RefreshControl onRefresh={handleSearch} refreshing={loading} /> }
       extraData={pokemons}
       ListEmptyComponent={<PokemonListEmpty search={search} />}
     />

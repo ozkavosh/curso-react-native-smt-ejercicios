@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 45,
+    marginVertical: 10
   },
   input: {
     height: 40,
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    borderRadius: 75
   },
   button: {
     flexGrow: 1,
@@ -62,7 +64,11 @@ const Home = () => {
 
   const handleSearch = () => {
     setLoading(true);
-    setTimeout(searchPokemons, 3000);
+    if(search){
+      setTimeout(searchPokemons, 3000);
+    }else{
+      searchPokemons()
+    }
   };
 
   useEffect(() => {
@@ -76,13 +82,16 @@ const Home = () => {
         style={{
           alignItems: 'center',
           flexDirection: 'row',
-          marginVertical: 15,
+          marginTop: 15,
         }}>
         <Text style={{marginRight: 5}}>Desactivar Búsqueda</Text>
         <Switch
           onValueChange={_ => setDisabled((prev: boolean) => !prev)}
           value={disabled}></Switch>
       </View>
+
+      <PokemonList loading={loading} pokemons={pokemons} search={search} handleSearch={handleSearch}/>
+
       <View style={styles.search}>
         <TextInput
           onChangeText={(newText: string) => setSearch(newText)}
@@ -106,8 +115,6 @@ const Home = () => {
           />
         )}
       </View>
-
-      <PokemonList loading={loading} pokemons={pokemons} search={search}/>
     </SafeAreaView>
   );
 };

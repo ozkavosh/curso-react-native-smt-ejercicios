@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   SafeAreaView,
@@ -12,48 +11,21 @@ import {
 } from 'react-native';
 import PokemonList from '../../components/PokemonList/PokemonList';
 import pokemonList from '../../db/pokemonList.js';
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    margin: 10,
-    flex: 1,
-  },
-  container: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    height: 75,
-  },
-  search: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 45,
-    marginVertical: 10
-  },
-  input: {
-    height: 40,
-    flexGrow: 2,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 75
-  },
-  button: {
-    flexGrow: 1,
-  },
-  
-});
+import styles from './HomeStyles';
 
 const Home = () => {
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
+  const [searchInputValue, setSearchInputValue] = useState('');
+  const [currentSearch, setCurrentSearch] = useState('');
   const [pokemons, setPokemons] = useState([]);
 
   const searchPokemons = () => {
-    if (search) {
+    setCurrentSearch(searchInputValue);
+    if (searchInputValue) {
       setPokemons(
         pokemonList.filter(pokemon =>
-          pokemon.name.includes(search.toLowerCase()),
+          pokemon.name.includes(searchInputValue.toLowerCase()),
         ),
       );
     } else {
@@ -64,10 +36,10 @@ const Home = () => {
 
   const handleSearch = () => {
     setLoading(true);
-    if(search){
+    if(searchInputValue){
       setTimeout(searchPokemons, 3000);
     }else{
-      searchPokemons()
+      searchPokemons();
     }
   };
 
@@ -90,13 +62,13 @@ const Home = () => {
           value={disabled}></Switch>
       </View>
 
-      <PokemonList loading={loading} pokemons={pokemons} search={search} handleSearch={handleSearch}/>
+      <PokemonList loading={loading} pokemons={pokemons} search={currentSearch} handleSearch={handleSearch}/>
 
       <View style={styles.search}>
         <TextInput
-          onChangeText={(newText: string) => setSearch(newText)}
+          onChangeText={(newText: string) => setSearchInputValue(newText)}
           onSubmitEditing={handleSearch}
-          value={search}
+          value={searchInputValue}
           editable={!disabled}
           style={[
             styles.input,

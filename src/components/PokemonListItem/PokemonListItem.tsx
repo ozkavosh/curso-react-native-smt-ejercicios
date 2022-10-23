@@ -45,7 +45,7 @@ const PokemonListItem = ({pokemon}) => {
       <View style={{marginLeft: 'auto'}}>
         <Button title="VER IMAGEN" onPress={handleButtonPress} />
       </View>
-      <PokemonModal pokemonUrl={pokemon.url} showModal={showModal} setShowModal={setShowModal}/>
+      { showModal && <PokemonModal pokemonUrl={pokemon.url} showModal={showModal} setShowModal={setShowModal}/>}
     </View>
   );
 };

@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   Modal,
-  Alert,
   Pressable,
   Linking,
 } from 'react-native';
@@ -71,13 +70,13 @@ const OpenURLButton = ({url}) => {
 };
 
 const PokemonModal = ({pokemonUrl, showModal, setShowModal}) => {
+  // console.log("Hola soy un modal ocupando memoria!");
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={showModal}
       onRequestClose={() => {
-        Alert.alert('Modal has been closed.');
         setShowModal(!showModal);
       }}>
       <View style={styles.centeredView}>

@@ -1,6 +1,13 @@
-import {View, Text, Image, StyleSheet, Button} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Button,
+  TouchableOpacity,
+} from 'react-native';
 import {capitalize} from '../../utils/capitalizeString';
-import React, { useState, memo } from 'react';
+import React, {useState, memo} from 'react';
 import PokemonModal from '../PokemonModal/PokemonModal';
 
 const styles = StyleSheet.create({
@@ -31,21 +38,32 @@ const styles = StyleSheet.create({
   },
 });
 
-const PokemonListItem = ({pokemon}) => {
+const PokemonListItem = ({pokemon, dispatch}) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleButtonPress = () => {
     setShowModal(true);
-  }
+  };
 
   return (
     <View style={styles.pokemon}>
-      <Image style={styles.pokemonImg} source={{uri: pokemon.url}} />
+      <TouchableOpacity
+        onPress={() => 
+           dispatch({ type: 'SHOW_POKEMON', payload: pokemon.url })
+        }>
+        <Image style={styles.pokemonImg} source={{uri: pokemon.url}} />
+      </TouchableOpacity>
       <Text style={styles.pokemonText}>{capitalize(pokemon.name)}</Text>
       <View style={{marginLeft: 'auto'}}>
         <Button title="VER IMAGEN" onPress={handleButtonPress} />
       </View>
-      { showModal && <PokemonModal pokemonUrl={pokemon.url} showModal={showModal} setShowModal={setShowModal}/>}
+      {showModal && (
+        <PokemonModal
+          pokemonUrl={pokemon.url}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+      )}
     </View>
   );
 };

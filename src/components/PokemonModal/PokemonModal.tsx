@@ -55,9 +55,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const OpenURLButton = ({url}) => {
+const OpenURLButton = ({url, setShowModal}) => {
   const handlePress = useCallback(async () => {
     await Linking.openURL(url);
+    setShowModal(prev => !prev);
   }, [url]);
 
   return (
@@ -86,7 +87,7 @@ const PokemonModal = ({pokemonUrl, showModal, setShowModal}) => {
             ¿Estás seguro?
           </Text>
           <View style={styles.buttonContainer}>
-            <OpenURLButton url={pokemonUrl}>Ver Imagen</OpenURLButton>
+            <OpenURLButton url={pokemonUrl} setShowModal={setShowModal}>Ver Imagen</OpenURLButton>
             <Pressable
               style={[styles.button, styles.buttonClose, {marginLeft: 5}]}
               onPress={() => setShowModal(!showModal)}>

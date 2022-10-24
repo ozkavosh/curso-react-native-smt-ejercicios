@@ -3,7 +3,7 @@ import React from 'react';
 import PokemonListItem from '../PokemonListItem/PokemonListItem';
 import PokemonListEmpty from '../PokemonListEmpty/PokemonListEmpty';
 
-const PokemonList = ({pokemons, loading, search, handleSearch}) => {
+const PokemonList = ({pokemons, loading, search, handleSearch, dispatch}) => {
   return (
     <FlatList
       style={{width: '100%'}}
@@ -11,7 +11,7 @@ const PokemonList = ({pokemons, loading, search, handleSearch}) => {
       maxToRenderPerBatch={5}
       initialNumToRender={5}
       keyExtractor={item => item.name}
-      renderItem={({item}) => <PokemonListItem pokemon={item}/>}
+      renderItem={({item}) => <PokemonListItem pokemon={item} dispatch={dispatch}/>}
       refreshControl = { <RefreshControl onRefresh={handleSearch} refreshing={loading} /> }
       extraData={pokemons}
       ListEmptyComponent={<PokemonListEmpty search={search} />}

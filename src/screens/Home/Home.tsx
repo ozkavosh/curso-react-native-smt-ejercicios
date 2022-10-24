@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useReducer} from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,12 @@ import {
   Button,
   Switch,
   TextInput,
+  Pressable,
+  Modal,
 } from 'react-native';
 import PokemonList from '../../components/PokemonList/PokemonList';
 import pokemonList from '../../db/pokemonList.js';
+import {WebView} from 'react-native-webview';
 import styles from './HomeStyles';
 
 const Home = () => {
@@ -19,6 +22,25 @@ const Home = () => {
   const [searchInputValue, setSearchInputValue] = useState('');
   const [currentSearch, setCurrentSearch] = useState('');
   const [pokemons, setPokemons] = useState([]);
+  const [state, dispatch] = useReducer(
+    (state, action) => {
+      switch (action.type) {
+        case 'HIDE_POKEMON':
+          return {
+            showImage: false,
+            imageUrl: '',
+          };
+        case 'SHOW_POKEMON':
+          return {
+            showImage: true,
+            imageUrl: action.payload,
+          };
+        default:
+          return state;
+      }
+    },
+    {showImage: false, imageUrl: ''},
+  );
 
   const searchPokemons = () => {
     setCurrentSearch(searchInputValue);
@@ -36,9 +58,9 @@ const Home = () => {
 
   const handleSearch = () => {
     setLoading(true);
-    if(searchInputValue){
+    if (searchInputValue) {
       setTimeout(searchPokemons, 3000);
-    }else{
+    } else {
       searchPokemons();
     }
   };
@@ -48,7 +70,31 @@ const Home = () => {
   }, []);
 
   return (
-    <SafeAreaView style={[styles.mainContainer, {alignItems: 'center'}]}>
+    <SafeAreaView
+      style={[styles.mainContainer, {zIndex: 1, alignItems: 'center'}]}>
+      {state.showImage && (
+        <Modal
+          visible={state.showImage}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => {
+            dispatch({type: 'HIDE_POKEMON'});
+          }}>
+          <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center'}}>
+            <Pressable onPress={() => dispatch({type: 'HIDE_POKEMON'})}>
+              <Text style={{color: 'white', fontSize: 30, marginBottom: '45%'}}>
+                X
+              </Text>
+            </Pressable>
+            <WebView
+              containerStyle={{width: 300, height: 300, flex: 0}}
+              source={{
+                uri: state.imageUrl,
+              }}
+            />
+          </View>
+        </Modal>
+      )}
       <Image source={require('../../img/logo.png')} />
       <View
         style={{
@@ -62,7 +108,13 @@ const Home = () => {
           value={disabled}></Switch>
       </View>
 
-      <PokemonList loading={loading} pokemons={pokemons} search={currentSearch} handleSearch={handleSearch}/>
+      <PokemonList
+        dispatch={dispatch}
+        loading={loading}
+        pokemons={pokemons}
+        search={currentSearch}
+        handleSearch={handleSearch}
+      />
 
       <View style={styles.search}>
         <TextInput

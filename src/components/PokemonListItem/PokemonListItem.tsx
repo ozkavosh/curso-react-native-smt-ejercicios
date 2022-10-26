@@ -4,7 +4,7 @@ import {
   Image,
   StyleSheet,
   Button,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 import {capitalize} from '../../utils/capitalizeString';
 import React, {useState, memo} from 'react';

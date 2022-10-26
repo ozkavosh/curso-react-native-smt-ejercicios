@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useReducer} from 'react';
+import React, {useState, useEffect, useReducer, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,14 @@ import {
   Button,
   Switch,
   TextInput,
-  Pressable,
-  Modal,
+  Animated,
+  Easing,
+  TouchableOpacity,
 } from 'react-native';
 import PokemonList from '../../components/PokemonList/PokemonList';
 import pokemonList from '../../db/pokemonList.js';
-import {WebView} from 'react-native-webview';
 import styles from './HomeStyles';
+import PokemonWebView from '../../components/PokemonWebView/PokemonWebView';
 
 const Home = () => {
   const [disabled, setDisabled] = useState(false);
@@ -41,6 +42,32 @@ const Home = () => {
     },
     {showImage: false, imageUrl: ''},
   );
+  const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  const animate = () => {
+    animatedValue.setValue(0);
+    Animated.timing(animatedValue, {
+      toValue: 2,
+      duration: 2500,
+      easing: Easing.elastic(1),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const animatedStyles = [
+    {
+      transform: [
+        {
+          rotateY: animatedValue.interpolate({
+            inputRange: [0, 1, 2],
+            outputRange: ['0deg', '360deg', '720deg'],
+          }),
+        },
+        {perspective: 1000},
+      ],
+    },
+  ];
 
   const searchPokemons = () => {
     setCurrentSearch(searchInputValue);
@@ -65,6 +92,11 @@ const Home = () => {
     }
   };
 
+  const handleSwitch = () => {
+    setDisabled((prev: boolean) => !prev);
+    animate();
+  };
+
   useEffect(() => {
     setPokemons(pokemonList);
   }, []);
@@ -73,29 +105,15 @@ const Home = () => {
     <SafeAreaView
       style={[styles.mainContainer, {zIndex: 1, alignItems: 'center'}]}>
       {state.showImage && (
-        <Modal
-          visible={state.showImage}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => {
-            dispatch({type: 'HIDE_POKEMON'});
-          }}>
-          <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center'}}>
-            <Pressable onPress={() => dispatch({type: 'HIDE_POKEMON'})}>
-              <Text style={{color: 'white', fontSize: 30, marginBottom: '45%'}}>
-                X
-              </Text>
-            </Pressable>
-            <WebView
-              containerStyle={{width: 300, height: 300, flex: 0}}
-              source={{
-                uri: state.imageUrl,
-              }}
-            />
-          </View>
-        </Modal>
+        <PokemonWebView
+          show={state.showImage}
+          imageUrl={state.imageUrl}
+          handlePress={dispatch}
+        />
       )}
-      <Image source={require('../../img/logo.png')} />
+      <AnimatedTouchable style={animatedStyles} onPress={() => animate()}>
+        <Image source={require('../../img/logo.png')} />
+      </AnimatedTouchable>
       <View
         style={{
           alignItems: 'center',
@@ -103,9 +121,7 @@ const Home = () => {
           marginTop: 15,
         }}>
         <Text style={{marginRight: 5}}>Desactivar Búsqueda</Text>
-        <Switch
-          onValueChange={_ => setDisabled((prev: boolean) => !prev)}
-          value={disabled}></Switch>
+        <Switch onValueChange={handleSwitch} value={disabled}></Switch>
       </View>
 
       <PokemonList
@@ -133,7 +149,6 @@ const Home = () => {
         ) : (
           <Button
             disabled={disabled}
-            style={styles.button}
             title="Buscar"
             onPress={handleSearch}
           />

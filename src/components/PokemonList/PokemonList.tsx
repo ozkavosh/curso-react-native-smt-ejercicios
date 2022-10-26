@@ -12,7 +12,7 @@ const PokemonList = ({pokemons, loading, search, handleSearch, dispatch}) => {
       initialNumToRender={5}
       keyExtractor={item => item.name}
       renderItem={({item}) => <PokemonListItem pokemon={item} dispatch={dispatch}/>}
-      refreshControl = { <RefreshControl onRefresh={handleSearch} refreshing={loading} /> }
+      refreshControl = { <RefreshControl onRefresh={() => !loading && handleSearch()} refreshing={loading} /> }
       extraData={pokemons}
       ListEmptyComponent={<PokemonListEmpty search={search} />}
     />

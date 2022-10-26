@@ -45,23 +45,34 @@ const Home = () => {
   const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
   const animatedValue = useRef(new Animated.Value(0)).current;
 
-  const animate = () => {
+  const spin = () => {
     animatedValue.setValue(0);
     Animated.timing(animatedValue, {
-      toValue: 2,
+      toValue: 1,
       duration: 2500,
       easing: Easing.elastic(1),
       useNativeDriver: true,
     }).start();
   };
 
+  const spinLoop = useRef(
+    Animated.loop(
+      Animated.timing(animatedValue, {
+        toValue: 1,
+        duration: 2500,
+        easing: Easing.elastic(1),
+        useNativeDriver: true,
+      }),
+    ),
+  ).current;
+
   const animatedStyles = [
     {
       transform: [
         {
           rotateY: animatedValue.interpolate({
-            inputRange: [0, 1, 2],
-            outputRange: ['0deg', '360deg', '720deg'],
+            inputRange: [0, 1],
+            outputRange: ['0deg', '360deg'],
           }),
         },
         {perspective: 1000},
@@ -86,7 +97,7 @@ const Home = () => {
   const handleSearch = () => {
     setLoading(true);
     if (searchInputValue) {
-      setTimeout(searchPokemons, 3000);
+      setTimeout(searchPokemons, 5000);
     } else {
       searchPokemons();
     }
@@ -94,12 +105,27 @@ const Home = () => {
 
   const handleSwitch = () => {
     setDisabled((prev: boolean) => !prev);
-    animate();
+    !loading && spin();
   };
 
   useEffect(() => {
     setPokemons(pokemonList);
   }, []);
+
+  useEffect(() => {
+    if (loading) {
+      spinLoop.start();
+    } else {
+      spinLoop.stop();
+      spinLoop.reset();
+      animatedValue.setValue(0);
+    }
+
+    return () => {
+      spinLoop.stop();
+      spinLoop.reset();
+    };
+  }, [loading]);
 
   return (
     <SafeAreaView
@@ -111,7 +137,9 @@ const Home = () => {
           handlePress={dispatch}
         />
       )}
-      <AnimatedTouchable style={animatedStyles} onPress={() => animate()}>
+      <AnimatedTouchable
+        style={animatedStyles}
+        onPress={() => !loading && spin()}>
         <Image source={require('../../img/logo.png')} />
       </AnimatedTouchable>
       <View
@@ -147,11 +175,7 @@ const Home = () => {
         {loading ? (
           <ActivityIndicator />
         ) : (
-          <Button
-            disabled={disabled}
-            title="Buscar"
-            onPress={handleSearch}
-          />
+          <Button disabled={disabled} title="Buscar" onPress={handleSearch} />
         )}
       </View>
     </SafeAreaView>
